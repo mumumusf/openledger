@@ -1,158 +1,199 @@
-# Gradient Network 挂机脚本保姆级教程
+# DeSpeed Validator 自动化脚本
 
-> 👨‍💻 开发者：小林 (@yoyomyoyoa)
+这是一个使用 Puppeteer 自动化运行 DeSpeed Validator 插件的脚本，支持在 VPS 服务器上运行。本指南将帮助新手用户快速上手使用该脚本。
 
-## 🌟 这是什么？
+## 开始使用
 
-这是一个帮助你自动挂机赚取 Gradient Network 积分的工具。它可以：
-- 自动登录账号
-- 保持在线状态
-- 24小时挂机运行
-- 支持代理IP
+### 1. 注册 DeSpeed 账号
 
-## 🎯 准备工作
+1. 使用以下链接注册 DeSpeed 账号：
+   [点击这里注册 DeSpeed](https://app.despeed.net/register?ref=2kNPSl8sHTNG)
 
-### 1. 注册 Gradient Network 账号
-- 点击这里注册：[Gradient Network 注册](https://app.gradient.network/signup?code=VV3TZE)
-- 记住你的邮箱和密码，后面需要用到
+2. 注册步骤：
+   - 点击上方链接进入注册页面
+   - 填写您的邮箱地址
+   - 设置安全的密码
+   - 完成注册并验证邮箱
+   - 登录您的账号
 
-### 2. 购买代理（强烈推荐）
-1. 访问 [Proxy-Cheap](https://app.proxy-cheap.com/r/puD3oz)
-2. 注册并登录
-3. 选择 Static Residential 类型的代理
-4. 购买后，你会得到类似这样的代理地址：
+3. 注册后：
+   - 保存好您的登录信息
+   - 不要与他人分享账号信息
+   - 建议开启二步验证以提高安全性
+
+## 新手使用教学
+
+### 1. VPS 环境准备
+
+在开始使用之前，请确保您的 VPS 已安装以下软件：
+
+- Node.js（版本 14.0 或更高）
+- Google Chrome 浏览器
+  ```bash
+  # Ubuntu/Debian 系统安装 Chrome
+  wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+  sudo apt install ./google-chrome-stable_current_amd64.deb
+
+  # CentOS 系统安装 Chrome
+  wget https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm
+  sudo yum install ./google-chrome-stable_current_x86_64.rpm
+  ```
+- 必要的依赖库
+  ```bash
+  # Ubuntu/Debian 系统
+  sudo apt-get update
+  sudo apt-get install -y ca-certificates fonts-liberation libasound2 libatk-bridge2.0-0 libatk1.0-0 libc6 libcairo2 libcups2 libdbus-1-3 libexpat1 libfontconfig1 libgbm1 libgcc1 libglib2.0-0 libgtk-3-0 libnspr4 libnss3 libpango-1.0-0 libpangocairo-1.0-0 libstdc++6 libx11-6 libx11-xcb1 libxcb1 libxcomposite1 libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 libxss1 libxtst6 lsb-release wget xdg-utils
+
+  # CentOS 系统
+  sudo yum install -y pango.x86_64 libXcomposite.x86_64 libXcursor.x86_64 libXdamage.x86_64 libXext.x86_64 libXi.x86_64 libXtst.x86_64 cups-libs.x86_64 libXScrnSaver.x86_64 libXrandr.x86_64 GConf2.x86_64 alsa-lib.x86_64 atk.x86_64 gtk3.x86_64 ipa-gothic-fonts xorg-x11-fonts-100dpi xorg-x11-fonts-75dpi xorg-x11-utils xorg-x11-fonts-cyrillic xorg-x11-fonts-Type1 xorg-x11-fonts-misc
+  ```
+
+### 2. 下载和安装
+
+1. 使用 Git 克隆项目或直接下载项目文件到 VPS：
+   ```bash
+   git clone [项目地址] 或者
+   wget [项目压缩包地址]
    ```
-   socks5://用户名:密码@代理地址:端口
+2. 进入项目文件夹：
+   ```bash
+   cd [项目文件夹名]
+   ```
+3. 安装项目依赖：
+   ```bash
+   npm install
    ```
 
-### 3. 准备服务器
-- 推荐使用 Ubuntu 系统的 VPS
-- 内存：1GB 及以上
-- 建议使用 [Vultr](https://www.vultr.com/) 或 [DigitalOcean](https://www.digitalocean.com/)
+### 3. 配置说明
 
-## 📝 安装步骤
+在运行脚本之前，您需要准备：
 
-### 第一步：连接到服务器
+1. DeSpeed 账号（如果没有，请参考上方的注册步骤）
+2. 代理信息：格式为 `IP:端口:用户名:密码`
+3. 登录令牌（Token）
 
-#### Windows 用户：
-1. 下载并安装 [PuTTY](https://www.putty.org/)
-2. 打开 PuTTY
-3. 输入你的服务器 IP
-4. 点击 "Open"
-5. 输入用户名（通常是 root）和密码
+#### 如何获取登录令牌
 
-#### Mac/Linux 用户：
-1. 打开终端
-2. 输入：`ssh root@你的服务器IP`
-3. 输入密码
+方法一：从浏览器请求中获取（推荐）
+1. 在浏览器中访问 [DeSpeed](https://app.despeed.net) 并登录您的账号
+2. 按 F12 打开浏览器开发者工具
+3. 切换到 Network（网络）标签页
+4. 在筛选框中输入 `dashboard-stats` 或 `api`
+5. 找到任意一个请求（例如：`/v1/api/dashboard-stats`）
+6. 在请求头（Headers）中找到 `authorization` 字段
+7. 复制 `Bearer ` 后面的内容（这就是您的登录令牌）
 
-### 第二步：安装必要软件
+方法二：从本地存储中获取
+1. 在浏览器中访问 DeSpeed 网站并登录您的账号
+2. 按 F12 打开浏览器开发者工具
+3. 切换到 Application（应用程序）标签页
+   - Chrome浏览器：点击 Application
+   - Firefox浏览器：点击 Storage（存储）
+4. 在左侧边栏找到：
+   - Chrome：Local Storage > https://app.despeed.net
+   - Firefox：Local Storage > https://app.despeed.net
+5. 在右侧找到 `token` 项
+6. 复制该项对应的值
 
-复制以下命令，在服务器终端中运行：
-```bash
-# 更新系统
-apt update && apt upgrade -y
+注意事项：
+- 令牌格式通常以 `eyJ` 开头的一长串字符
+- 令牌是您账号的重要凭证，请勿泄露给他人
+- 令牌有效期通常较长，但如果更换密码或退出登录会失效
+- 如果脚本提示令牌无效，请重新获取新的令牌
 
-# 安装必要工具
-apt install -y curl wget git screen
+### 4. 在 VPS 上运行脚本
 
-# 安装 Chrome 依赖
-apt install -y fonts-liberation libasound2 libatk-bridge2.0-0 libatk1.0-0 libatspi2.0-0 libcairo2 libcups2 libdbus-1-3 libdrm2 libexpat1 libgbm1 libglib2.0-0 libnspr4 libnss3 libpango-1.0-0 libx11-6 libxcb1 libxcomposite1 libxdamage1 libxext6 libxfixes3 libxkbcommon0 libxrandr2 xdg-utils
+1. 使用 Screen 或 Tmux 创建新会话（推荐，防止 SSH 断开后脚本停止）：
+   ```bash
+   # 使用 Screen
+   screen -S despeed
+   # 或使用 Tmux
+   tmux new -s despeed
+   ```
 
-# 下载并安装 Chrome
-wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-apt install -y ./google-chrome-stable_current_amd64.deb
+2. 启动脚本：
+   ```bash
+   npm start
+   ```
 
-# 安装 Docker
-curl -fsSL https://get.docker.com -o get-docker.sh
-sh get-docker.sh
+3. 根据提示输入代理信息
 
-# 验证安装
-google-chrome --version
-docker --version
-```
+4. 分离会话（保持脚本在后台运行）：
+   - Screen: 按 Ctrl+A 然后按 D
+   - Tmux: 按 Ctrl+B 然后按 D
 
-### 第三步：下载并运行程序
+5. 重新连接会话（需要时）：
+   ```bash
+   # Screen
+   screen -r despeed
+   # Tmux
+   tmux attach -t despeed
+   ```
 
-1. 下载程序：
-```bash
-# 克隆代码
-git clone https://github.com/mumumusf/gradient-network-bot.git
-cd gradient-network-bot
-```
+### 5. 运行状态说明
 
-2. 创建 screen 会话（保证程序不会因为断开 SSH 而停止）：
-```bash
-screen -S gradient-bot
-```
+脚本运行后，您将看到以下状态信息：
+- 代理连接状态
+- 登录状态
+- 插件状态
+- 自动刷新状态（每1小时自动刷新一次）
 
-3. 构建并运行 Docker 容器（替换下面的信息为你自己的）：
-```bash
-# 构建 Docker 镜像
-docker build -t gradient-bot .
+### 6. VPS 常见问题解答
 
-# 运行容器
-docker run -d --name gradient-bot \
--e APP_USER=你的Gradient邮箱 \
--e APP_PASS=你的Gradient密码 \
--e PROXY=socks5://代理用户名:代理密码@代理地址:端口 \
--e DEBUG=true \
---restart always \
-gradient-bot
-```
+#### Q1: 为什么脚本启动后显示 Chrome 无法启动？
+A: 可能是因为：
+- 缺少必要的系统依赖，请检查并安装所需依赖库
+- Chrome 安装不完整，尝试重新安装 Chrome
+- 系统内存不足，建议使用至少 2GB 内存的 VPS
 
-4. 查看运行日志：
-```bash
-docker logs -f gradient-bot
-```
+#### Q2: 如何在 VPS 后台持续运行脚本？
+A: 推荐使用 Screen 或 Tmux 工具，具体步骤见上述"运行脚本"部分。
 
-5. 按 `Ctrl + A` 然后按 `D` 来保持程序在后台运行
+#### Q3: VPS 重启后如何恢复运行？
+A: 
+1. 重新登录 VPS
+2. 进入项目目录
+3. 使用 Screen 或 Tmux 创建新会话
+4. 重新启动脚本
 
-## 🔍 如何检查程序是否正常运行？
+#### Q4: 如何查看运行日志？
+A: 可以使用以下方法：
+- 直接通过 Screen/Tmux 会话查看
+- 将输出重定向到日志文件：
+  ```bash
+  npm start > despeed.log 2>&1
+  ```
 
-1. 重新连接到程序界面：
-```bash
-screen -r gradient-bot
-```
+#### Q5: 登录令牌失效怎么办？
+A: 请按照以下步骤处理：
+1. 按照上述"如何获取登录令牌"的步骤重新获取令牌
+2. 停止当前运行的脚本（在 Screen/Tmux 中按 Ctrl+C）
+3. 使用新的令牌重新启动脚本
 
-2. 检查运行状态：
-```bash
-docker ps
-```
-如果看到 `gradient-bot` 状态是 `Up`，说明程序正在运行
+### 7. VPS 环境注意事项
 
-3. 查看最新日志：
-```bash
-docker logs -f gradient-bot
-```
+1. 确保 VPS 有足够的内存（建议 2GB 以上）
+2. 定期检查 VPS 的资源使用情况
+3. 建议使用 Screen 或 Tmux 来管理长期运行的脚本
+4. 如果使用防火墙，确保不会阻止脚本的网络连接
+5. 建议设置 VPS 自动重启后运行脚本的任务
 
-## ❓ 常见问题解答
+### 8. 技术支持
 
-### 1. 如何判断是否正常运行？
-- 运行 `docker ps` 能看到容器在线
-- 日志中没有红色报错信息
-- 登录网站后积分有增长
+如果您在 VPS 上使用过程中遇到任何问题，请：
+1. 检查系统日志：`/var/log/syslog` 或 `/var/log/messages`
+2. 检查 Chrome 是否正确安装：`google-chrome --version`
+3. 确认所有必需的依赖库都已安装
+4. 如果问题仍然存在，请联系技术支持并提供以下信息：
+   - VPS 系统版本
+   - Node.js 版本
+   - Chrome 版本
+   - 错误日志
 
-### 2. 代理在哪里买？
-推荐使用 [Proxy-Cheap](https://app.proxy-cheap.com/r/ksvW8Z)：
-- 选择 Static Residential 类型
-- 稳定性好，价格实惠
-- 支持多种支付方式
+### 9. 更新日志
 
-### 3. 遇到问题怎么办？
-- 检查网络是否正常
-- 确认账号密码是否正确
-- 查看运行日志寻找错误信息
-- 加入我们的交流群寻求帮助
-
-## 📱 联系方式
-
-- 开发者：小林
-- Twitter：[@yoyomyoyoa](https://twitter.com/yoyomyoyoa)
-
-## ⚠️ 注意事项
-
-1. 请使用可靠的代理服务
-2. 定期检查程序运行状态
-3. 保持服务器稳定在线
-4. 本项目仅供学习交流使用
+- 2024-01-xx：添加 VPS 环境支持
+- 2024-01-xx：添加自动刷新功能（1小时间隔）
+- 2024-01-xx：优化登录机制
+- 2024-01-xx：添加详细错误处理
+- 2024-01-xx：支持本地插件加载
