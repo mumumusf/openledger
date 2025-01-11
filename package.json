@@ -1,15 +1,22 @@
 {
-  "name": "despeed-validator-bot",
+  "name": "openledger",
+  "type": "module",
   "version": "1.0.0",
-  "description": "DeSpeed Validator automation script with proxy support",
-  "main": "index.js",
+  "main": "main.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node main.js"
   },
+  "author": "@zlkcyber",
+  "license": "MIT",
+  "description": "auto connect and ping openledger",
   "dependencies": {
-    "puppeteer": "^21.10.0",
-    "puppeteer-extra": "^3.3.6",
-    "puppeteer-extra-plugin-stealth": "^2.11.2",
-    "proxy-chain": "^2.4.0"
+    "axios": "^1.7.9",
+    "axios-retry": "^4.5.0",
+    "chalk": "^5.4.1",
+    "crypto": "^1.0.1",
+    "ethers": "^6.13.5",
+    "https-proxy-agent": "^7.0.6",
+    "socks-proxy-agent": "^8.0.5",
+    "ws": "^8.18.0"
   }
 }

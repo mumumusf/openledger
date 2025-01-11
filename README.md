@@ -1,199 +1,189 @@
-# DeSpeed Validator 自动化脚本
+# OpenLedger 自动化脚本 VPS 部署教程
 
-这是一个使用 Puppeteer 自动化运行 DeSpeed Validator 插件的脚本，支持在 VPS 服务器上运行。本指南将帮助新手用户快速上手使用该脚本。
+![banner](image.png)
 
-## 开始使用
+## 🌟 项目信息
 
-### 1. 注册 DeSpeed 账号
+- 🔗 **官方网站**：[OpenLedger 测试网](https://testnet.openledger.xyz/?referral_code=7kbrlkgppu)
+- 🎯 **项目介绍**：OpenLedger 是一个去中心化的计算资源共享平台
+- 🎁 **推荐注册**：使用[邀请链接](https://testnet.openledger.xyz/?referral_code=7kbrlkgppu)注册可获得额外奖励
 
-1. 使用以下链接注册 DeSpeed 账号：
-   [点击这里注册 DeSpeed](https://app.despeed.net/register?ref=2kNPSl8sHTNG)
+## 🎯 前期准备
 
-2. 注册步骤：
-   - 点击上方链接进入注册页面
-   - 填写您的邮箱地址
-   - 设置安全的密码
-   - 完成注册并验证邮箱
-   - 登录您的账号
+1. **注册账号**
+   - 点击[邀请链接](https://testnet.openledger.xyz/?referral_code=7kbrlkgppu)进入官网
+   - 使用 MetaMask 钱包连接
+   - 授权登录，完成注册
 
-3. 注册后：
-   - 保存好您的登录信息
-   - 不要与他人分享账号信息
-   - 建议开启二步验证以提高安全性
+2. **获取钱包地址**
+   - 登录后进入[仪表盘](https://testnet.openledger.xyz/dashboard)
+   - 在页面上可以看到你的钱包地址
+   - 记录下钱包地址，后续运行脚本时需要使用
 
-## 新手使用教学
+3. **准备代理**（推荐）
+   - 推荐使用 [Proxy-Cheap](https://app.proxy-cheap.com/r/puD3oz)
+   - 支持 HTTP/SOCKS 代理
+   - 格式：`protocol://user:password@ip:port`
+   - 建议准备多个代理，提高稳定性
+   - 性价比高，稳定性好
+   - 支持批量购买，适合多账号使用
 
-### 1. VPS 环境准备
+## 🌟 功能介绍
 
-在开始使用之前，请确保您的 VPS 已安装以下软件：
+- ✨ **自动发送心跳包**：保持节点在线
+- 🎁 **自动领取每日奖励**：无需手动操作
+- 👥 **支持多账号管理**：一次运行，多账号收益
+- 🔒 **支持代理功能**：支持 HTTP/SOCKS 代理
+- 🔄 **自动重连功能**：断线自动重连
+- 📊 **实时状态显示**：清晰展示每个账号状态
 
-- Node.js（版本 14.0 或更高）
-- Google Chrome 浏览器
-  ```bash
-  # Ubuntu/Debian 系统安装 Chrome
-  wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-  sudo apt install ./google-chrome-stable_current_amd64.deb
+## 📋 VPS 环境准备
 
-  # CentOS 系统安装 Chrome
-  wget https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm
-  sudo yum install ./google-chrome-stable_current_x86_64.rpm
-  ```
-- 必要的依赖库
-  ```bash
-  # Ubuntu/Debian 系统
-  sudo apt-get update
-  sudo apt-get install -y ca-certificates fonts-liberation libasound2 libatk-bridge2.0-0 libatk1.0-0 libc6 libcairo2 libcups2 libdbus-1-3 libexpat1 libfontconfig1 libgbm1 libgcc1 libglib2.0-0 libgtk-3-0 libnspr4 libnss3 libpango-1.0-0 libpangocairo-1.0-0 libstdc++6 libx11-6 libx11-xcb1 libxcb1 libxcomposite1 libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 libxss1 libxtst6 lsb-release wget xdg-utils
-
-  # CentOS 系统
-  sudo yum install -y pango.x86_64 libXcomposite.x86_64 libXcursor.x86_64 libXdamage.x86_64 libXext.x86_64 libXi.x86_64 libXtst.x86_64 cups-libs.x86_64 libXScrnSaver.x86_64 libXrandr.x86_64 GConf2.x86_64 alsa-lib.x86_64 atk.x86_64 gtk3.x86_64 ipa-gothic-fonts xorg-x11-fonts-100dpi xorg-x11-fonts-75dpi xorg-x11-utils xorg-x11-fonts-cyrillic xorg-x11-fonts-Type1 xorg-x11-fonts-misc
-  ```
-
-### 2. 下载和安装
-
-1. 使用 Git 克隆项目或直接下载项目文件到 VPS：
+1. **连接到你的 VPS**
    ```bash
-   git clone [项目地址] 或者
-   wget [项目压缩包地址]
+   ssh 用户名@你的服务器IP
    ```
-2. 进入项目文件夹：
+
+2. **安装 Node.js**
    ```bash
-   cd [项目文件夹名]
+   # 使用 Ubuntu/Debian
+   curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+   sudo apt-get install -y nodejs
+
+   # 或使用 CentOS
+   curl -fsSL https://rpm.nodesource.com/setup_18.x | sudo bash -
+   sudo yum install -y nodejs
+
+   # 验证安装
+   node --version
+   npm --version
    ```
-3. 安装项目依赖：
+
+3. **安装 Screen**（用于后台运行）
+   ```bash
+   # Ubuntu/Debian
+   sudo apt-get install screen
+
+   # CentOS
+   sudo yum install screen
+   ```
+
+## 🚀 部署步骤
+
+1. **创建工作目录**
+   ```bash
+   mkdir openledger
+   cd openledger
+   ```
+
+2. **上传脚本文件**
+   - 使用 SFTP 工具（如 FileZilla）上传所有文件到 VPS
+   - 或使用 Git（如果有仓库）：
+     ```bash
+     git clone 仓库地址
+     ```
+
+3. **安装依赖**
    ```bash
    npm install
    ```
 
-### 3. 配置说明
+## 💻 运行脚本
 
-在运行脚本之前，您需要准备：
-
-1. DeSpeed 账号（如果没有，请参考上方的注册步骤）
-2. 代理信息：格式为 `IP:端口:用户名:密码`
-3. 登录令牌（Token）
-
-#### 如何获取登录令牌
-
-方法一：从浏览器请求中获取（推荐）
-1. 在浏览器中访问 [DeSpeed](https://app.despeed.net) 并登录您的账号
-2. 按 F12 打开浏览器开发者工具
-3. 切换到 Network（网络）标签页
-4. 在筛选框中输入 `dashboard-stats` 或 `api`
-5. 找到任意一个请求（例如：`/v1/api/dashboard-stats`）
-6. 在请求头（Headers）中找到 `authorization` 字段
-7. 复制 `Bearer ` 后面的内容（这就是您的登录令牌）
-
-方法二：从本地存储中获取
-1. 在浏览器中访问 DeSpeed 网站并登录您的账号
-2. 按 F12 打开浏览器开发者工具
-3. 切换到 Application（应用程序）标签页
-   - Chrome浏览器：点击 Application
-   - Firefox浏览器：点击 Storage（存储）
-4. 在左侧边栏找到：
-   - Chrome：Local Storage > https://app.despeed.net
-   - Firefox：Local Storage > https://app.despeed.net
-5. 在右侧找到 `token` 项
-6. 复制该项对应的值
-
-注意事项：
-- 令牌格式通常以 `eyJ` 开头的一长串字符
-- 令牌是您账号的重要凭证，请勿泄露给他人
-- 令牌有效期通常较长，但如果更换密码或退出登录会失效
-- 如果脚本提示令牌无效，请重新获取新的令牌
-
-### 4. 在 VPS 上运行脚本
-
-1. 使用 Screen 或 Tmux 创建新会话（推荐，防止 SSH 断开后脚本停止）：
+1. **创建新的 Screen 会话**
    ```bash
-   # 使用 Screen
-   screen -S despeed
-   # 或使用 Tmux
-   tmux new -s despeed
+   screen -S openledger
    ```
 
-2. 启动脚本：
+2. **运行脚本**
    ```bash
-   npm start
+   node main.js
    ```
 
-3. 根据提示输入代理信息
+3. **输入必要信息**
+   - 按提示输入钱包地址（多个用逗号分隔）
+   - 按提示输入代理地址（可选）
 
-4. 分离会话（保持脚本在后台运行）：
-   - Screen: 按 Ctrl+A 然后按 D
-   - Tmux: 按 Ctrl+B 然后按 D
+4. **保持脚本运行**
+   - 按 `Ctrl + A + D` 分离 Screen 会话
+   - 脚本会在后台继续运行
 
-5. 重新连接会话（需要时）：
+5. **查看运行状态**
    ```bash
-   # Screen
-   screen -r despeed
-   # Tmux
-   tmux attach -t despeed
+   # 列出所有 Screen 会话
+   screen -ls
+
+   # 重新连接到会话
+   screen -r openledger
    ```
 
-### 5. 运行状态说明
+## 📝 常用 Screen 命令
 
-脚本运行后，您将看到以下状态信息：
-- 代理连接状态
-- 登录状态
-- 插件状态
-- 自动刷新状态（每1小时自动刷新一次）
+```bash
+screen -S 名称     # 创建新会话
+screen -ls        # 查看所有会话
+screen -r 名称     # 恢复会话
+Ctrl + A + D      # 分离当前会话
+Ctrl + C          # 结束当前程序
+exit              # 退出 Screen 会话
+```
 
-### 6. VPS 常见问题解答
+## ⚡ 性能建议
 
-#### Q1: 为什么脚本启动后显示 Chrome 无法启动？
-A: 可能是因为：
-- 缺少必要的系统依赖，请检查并安装所需依赖库
-- Chrome 安装不完整，尝试重新安装 Chrome
-- 系统内存不足，建议使用至少 2GB 内存的 VPS
+1. **VPS 配置建议**
+   - CPU：1核心即可
+   - 内存：1GB 以上
+   - 硬盘：20GB 以上
+   - 系统：Ubuntu 20.04/22.04 LTS
 
-#### Q2: 如何在 VPS 后台持续运行脚本？
-A: 推荐使用 Screen 或 Tmux 工具，具体步骤见上述"运行脚本"部分。
+2. **网络要求**
+   - 稳定的网络连接
+   - 较低的延迟
+   - 推荐使用代理以提高稳定性
 
-#### Q3: VPS 重启后如何恢复运行？
-A: 
-1. 重新登录 VPS
-2. 进入项目目录
-3. 使用 Screen 或 Tmux 创建新会话
-4. 重新启动脚本
+## 🔧 维护建议
 
-#### Q4: 如何查看运行日志？
-A: 可以使用以下方法：
-- 直接通过 Screen/Tmux 会话查看
-- 将输出重定向到日志文件：
-  ```bash
-  npm start > despeed.log 2>&1
-  ```
+1. **日常维护**
+   - 定期检查程序运行状态
+   - 查看日志确认是否正常运行
+   - 检查系统资源占用
 
-#### Q5: 登录令牌失效怎么办？
-A: 请按照以下步骤处理：
-1. 按照上述"如何获取登录令牌"的步骤重新获取令牌
-2. 停止当前运行的脚本（在 Screen/Tmux 中按 Ctrl+C）
-3. 使用新的令牌重新启动脚本
+2. **故障处理**
+   ```bash
+   # 查看程序是否运行
+   ps aux | grep node
 
-### 7. VPS 环境注意事项
+   # 查看系统资源
+   top
 
-1. 确保 VPS 有足够的内存（建议 2GB 以上）
-2. 定期检查 VPS 的资源使用情况
-3. 建议使用 Screen 或 Tmux 来管理长期运行的脚本
-4. 如果使用防火墙，确保不会阻止脚本的网络连接
-5. 建议设置 VPS 自动重启后运行脚本的任务
+   # 如果需要重启程序
+   screen -r openledger  # 重新连接到会话
+   Ctrl + C              # 停止当前程序
+   node main.js          # 重新启动
+   ```
 
-### 8. 技术支持
+## ⚠️ 注意事项
 
-如果您在 VPS 上使用过程中遇到任何问题，请：
-1. 检查系统日志：`/var/log/syslog` 或 `/var/log/messages`
-2. 检查 Chrome 是否正确安装：`google-chrome --version`
-3. 确认所有必需的依赖库都已安装
-4. 如果问题仍然存在，请联系技术支持并提供以下信息：
-   - VPS 系统版本
-   - Node.js 版本
-   - Chrome 版本
-   - 错误日志
+1. **安全建议**
+   - 使用强密码保护 VPS
+   - 定期更新系统
+   - 建议使用代理
+   - 不要泄露服务器信息
 
-### 9. 更新日志
+2. **稳定性建议**
+   - 使用 Screen 保持程序运行
+   - 定期检查运行状态
+   - 设置自动重启脚本
 
-- 2024-01-xx：添加 VPS 环境支持
-- 2024-01-xx：添加自动刷新功能（1小时间隔）
-- 2024-01-xx：优化登录机制
-- 2024-01-xx：添加详细错误处理
-- 2024-01-xx：支持本地插件加载
+3. **常见问题**
+   - 如遇断网，程序会自动重连
+   - 如遇程序崩溃，需手动重启
+   - 建议设置监控脚本
+
+## 📞 联系方式
+
+- 推特：[@YOYOMYOYOA](https://twitter.com/YOYOMYOYOA)
+
+## ⚖️ 免责声明
+
+本程序仅供学习交流使用，使用本程序产生的任何后果由使用者自行承担。请遵守当地法律法规，合理使用本程序。 
