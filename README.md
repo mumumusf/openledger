@@ -80,7 +80,7 @@
    - 使用 SFTP 工具（如 FileZilla）上传所有文件到 VPS
    - 或使用 Git（如果有仓库）：
      ```bash
-     git clone 仓库地址
+     git clone https://github.com/mumumusf/openledger.git
      ```
 
 3. **安装依赖**
