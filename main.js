@@ -251,7 +251,20 @@ async function claimRewards(token, proxy, index) {
         log.info(`账户 ${index} 每日奖励已领取:`, response.data.data);
         return response.data.data;
     } catch (error) {
-        log.error('领取每日奖励失败:', error.message || error);
+        if (error.response?.status === 401) {
+            log.error(`账户 ${index} 领取奖励失败: 认证失败`);
+            return 'unauthorized';
+        }
+        if (error.response?.status === 429) {
+            log.warn(`账户 ${index} 领取奖励请求过于频繁，等待重试...`);
+            await new Promise(resolve => setTimeout(resolve, 5000));
+            return await claimRewards(token, proxy, index);
+        }
+        if (error.response?.data?.message?.includes('next claim')) {
+            log.warn(`账户 ${index} 未到领取时间`);
+            return 'not_time';
+        }
+        log.error(`账户 ${index} 领取每日奖励失败:`, error.message || error);
         return null;
     }
 }
@@ -351,12 +364,36 @@ const main = async () => {
 
                         if (claimDetails && !claimDetails.claimed) {
                             log.info(`正在为账户 ${index + 1} 领取每日奖励...`);
-                            await claimRewards(token, proxy, index + 1);
+                            const result = await claimRewards(token, proxy, index + 1);
+                            
+                            if (result === 'unauthorized') {
+                                log.info(`账户 ${index + 1} 认证失败：令牌无效或已过期，正在重新连接...`);
+                                isConnected = false;
+                                socket.close();
+                                clearInterval(userInfoInterval);
+                                clearInterval(claimDetailsInterval);
+                                return;
+                            }
+
+                            if (result === 'not_time') {
+                                log.info(`账户 ${index + 1} 未到领取时间，将在下次检查`);
+                                return;
+                            }
+
+                            if (!result) {
+                                log.warn(`账户 ${index + 1} 领取失败，将在下次检查时重试`);
+                            }
+                        } else if (claimDetails) {
+                            log.info(`账户 ${index + 1} 今日奖励已领取`);
                         }
                     } catch (error) {
                         log.error(`获取账户 ${index + 1} 领取详情失败: ${error.message || '未知错误'}`);
+                        // 如果是网络错误，等待后继续
+                        if (error.code === 'ECONNREFUSED' || error.code === 'ETIMEDOUT') {
+                            await new Promise(resolve => setTimeout(resolve, 5000));
+                        }
                     }
-                }, 60 * 60 * 1000);
+                }, 30 * 60 * 1000); // 每30分钟检查一次
 
             } catch (error) {
                 log.error(`账户 ${index + 1} 启动 WebSocket 客户端失败:`, error.message || '未知错误');
@@ -398,11 +435,6 @@ process.on('SIGTERM', () => {
     rl.close();
     process.exit(0);
 });
-    });
 
-    await Promise.all(accountsProcessing);
-};
-
-//run
-//运行主程序
+// 运行主程序
 main();
