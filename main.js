@@ -398,6 +398,11 @@ process.on('SIGTERM', () => {
     rl.close();
     process.exit(0);
 });
+    });
 
+    await Promise.all(accountsProcessing);
+};
+
+//run
 //运行主程序
 main();
