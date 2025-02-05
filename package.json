@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node main.js"
   },
-  "author": "@zlkcyber",
+  "author": "小林",
   "license": "MIT",
   "description": "auto connect and ping openledger",
   "dependencies": {
